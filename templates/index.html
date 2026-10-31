@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% block title %}Home | AI Threat Detector{% endblock %}
+{% block content %}
+<section class="hero-section">
+    <div class="container-fluid px-4 py-5">
+        <div class="row align-items-center g-4 py-3">
+            <div class="col-xl-7">
+                <div class="hero-copy">
+                    <span class="badge badge-cyber mb-3">AI-POWERED THREAT INTELLIGENCE</span>
+                    <h1>Cybersecurity threat detection with machine learning.</h1>
+                    <p>
+                        Analyze network traffic records and classify them as normal or malicious using a Random Forest model trained on NSL-KDD dataset patterns.
+                    </p>
+                    <div class="hero-actions d-flex flex-wrap gap-3">
+                        <a href="{{ url_for('analyze') }}" class="btn btn-primary btn-lg">Analyze Traffic</a>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light btn-lg">View Dashboard</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-5">
+                <div class="hero-panel glass-card">
+                    <div class="panel-header">
+                        <span class="status-dot"></span>
+                        <span>Model Overview</span>
+                    </div>
+                    <div class="summary-grid">
+                        <div class="mini-stat">
+                            <span class="label">Model</span>
+                            <strong>Random Forest</strong>
+                        </div>
+                        <div class="mini-stat">
+                            <span class="label">Dataset</span>
+                            <strong>NSL-KDD</strong>
+                        </div>
+                        <div class="mini-stat">
+                            <span class="label">Classification</span>
+                            <strong>Binary</strong>
+                        </div>
+                        <div class="mini-stat">
+                            <span class="label">Input Type</span>
+                            <strong>Traffic Records</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container-fluid px-4 py-5">
+    <div class="row g-4">
+        <div class="col-md-6 col-xl-3">
+            <div class="feature-card h-100">
+                <i class="bi bi-shield-lock feature-icon"></i>
+                <h4>AI Threat Detection</h4>
+                <p>Classify network records as normal or malicious using trained machine learning logic.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="feature-card h-100">
+                <i class="bi bi-file-earmark-spreadsheet feature-icon"></i>
+                <h4>CSV Batch Analysis</h4>
+                <p>Upload CSV files with multiple traffic records and inspect batch prediction outputs.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="feature-card h-100">
+                <i class="bi bi-clock-history feature-icon"></i>
+                <h4>Prediction History</h4>
+                <p>Track prior analysis results and review the outcome history saved by the app.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="feature-card h-100">
+                <i class="bi bi-graph-up-arrow feature-icon"></i>
+                <h4>Security Analytics</h4>
+                <p>Review dashboard metrics, chart trends, and model evaluation summaries in one place.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container-fluid px-4 py-5">
+    <div class="row g-4 align-items-start">
+        <div class="col-lg-6">
+            <div class="info-panel h-100">
+                <h3>How the system works</h3>
+                <div class="process-list">
+                    <div class="process-item">
+                        <span class="step-number">1</span>
+                        <div>
+                            <h5>Dataset preparation</h5>
+                            <p>Load the NSL-KDD training dataset and validate the expected 41-feature schema.</p>
+                        </div>
+                    </div>
+                    <div class="process-item">
+                        <span class="step-number">2</span>
+                        <div>
+                            <h5>Feature pre-processing</h5>
+                            <p>Handle categorical features like protocol type, service, and flag before model training.</p>
+                        </div>
+                    </div>
+                    <div class="process-item">
+                        <span class="step-number">3</span>
+                        <div>
+                            <h5>Model training</h5>
+                            <p>Train a Random Forest pipeline and evaluate key metrics using the saved metrics file.</p>
+                        </div>
+                    </div>
+                    <div class="process-item">
+                        <span class="step-number">4</span>
+                        <div>
+                            <h5>Prediction service</h5>
+                            <p>Use the saved model for individual analysis, CSV batch analysis, and dashboard summaries.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="info-panel h-100">
+                <h3>Project scope</h3>
+                <ul class="scope-list">
+                    <li>Network traffic record classification</li>
+                    <li>Binary normal vs attack traffic decisioning</li>
+                    <li>Model evaluation and dashboard reporting</li>
+                    <li>CSV batch upload with row validation</li>
+                    <li>Prediction history and classification summaries</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container-fluid px-4 pb-5">
+    <div class="section-title-row">
+        <h3>Technology stack</h3>
+    </div>
+    <div class="row g-3">
+        <div class="col-md-3 col-sm-6"><div class="stack-card">Python</div></div>
+        <div class="col-md-3 col-sm-6"><div class="stack-card">Flask</div></div>
+        <div class="col-md-3 col-sm-6"><div class="stack-card">Scikit-learn</div></div>
+        <div class="col-md-3 col-sm-6"><div class="stack-card">Random Forest</div></div>
+        <div class="col-md-3 col-sm-6"><div class="stack-card">Pandas</div></div>
+        <div class="col-md-3 col-sm-6"><div class="stack-card">Bootstrap 5</div></div>
+        <div class="col-md-3 col-sm-6"><div class="stack-card">Chart.js</div></div>
+        <div class="col-md-3 col-sm-6"><div class="stack-card">SQLite</div></div>
+    </div>
+</section>
+{% endblock %}

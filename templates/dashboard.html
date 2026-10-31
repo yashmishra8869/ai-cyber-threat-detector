@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard | AI Threat Detector{% endblock %}
+{% block content %}
+<div class="container-fluid px-4 py-5">
+    <div class="page-header mb-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+        <div>
+            <span class="eyebrow">THREAT MONITORING</span>
+            <h1>Cybersecurity Dashboard</h1>
+        </div>
+        <div class="header-pill">
+            <i class="bi bi-circle-fill"></i>
+            <span>{{ current_date }}</span>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-xl-3">
+            <div class="metric-card">
+                <div class="metric-top">
+                    <span class="metric-icon success"><i class="bi bi-database-check"></i></span>
+                    <span class="metric-label">Total analyzed records</span>
+                </div>
+                <strong>{{ summary.total }}</strong>
+                <small>Recorded evaluations</small>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="metric-card">
+                <div class="metric-top">
+                    <span class="metric-icon primary"><i class="bi bi-shield-check"></i></span>
+                    <span class="metric-label">Normal traffic</span>
+                </div>
+                <strong>{{ summary.normal }}</strong>
+                <small>Safe classifications</small>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="metric-card">
+                <div class="metric-top">
+                    <span class="metric-icon danger"><i class="bi bi-exclamation-triangle"></i></span>
+                    <span class="metric-label">Attack traffic</span>
+                </div>
+                <strong>{{ summary.attack }}</strong>
+                <small>Threat detections</small>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="metric-card">
+                <div class="metric-top">
+                    <span class="metric-icon secondary"><i class="bi bi-activity"></i></span>
+                    <span class="metric-label">Analysis sessions</span>
+                </div>
+                <strong>{{ summary.sessions }}</strong>
+                <small>Session count</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="panel-card chart-panel">
+                <div class="panel-header-row">
+                    <h3>Traffic distribution</h3>
+                    <span class="panel-badge">Live</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trafficChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel-card chart-panel">
+                <div class="panel-header-row">
+                    <h3>Recent analysis statistics</h3>
+                    <span class="panel-badge">History</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="historyChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-xl-6">
+            <div class="panel-card">
+                <div class="panel-header-row">
+                    <h3>Model evaluation metrics</h3>
+                    <span class="panel-badge neutral">Saved metrics</span>
+                </div>
+                {% if metrics %}
+                    <div class="metrics-list mt-3">
+                        <div class="metric-row"><span>Accuracy</span><strong>{{ metrics.accuracy }}</strong></div>
+                        <div class="metric-row"><span>Precision</span><strong>{{ metrics.precision }}</strong></div>
+                        <div class="metric-row"><span>Recall</span><strong>{{ metrics.recall }}</strong></div>
+                        <div class="metric-row"><span>F1-score</span><strong>{{ metrics.f1_score }}</strong></div>
+                    </div>
+                {% else %}
+                    <div class="empty-state mt-3">
+                        <p>No model metrics are available yet. Train the model first using <code>python train_model.py</code>.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-xl-6">
+            <div class="panel-card">
+                <div class="panel-header-row">
+                    <h3>Confusion matrix</h3>
+                    <span class="panel-badge neutral">Evaluation</span>
+                </div>
+                {% if metrics and metrics.confusion_matrix %}
+                    <div class="confusion-matrix-wrapper mt-3">
+                        <div class="confusion-grid">
+                            {% set matrix = metrics.confusion_matrix %}
+                            <div class="matrix-cell matrix-label"> </div>
+                            <div class="matrix-cell matrix-label">Normal</div>
+                            <div class="matrix-cell matrix-label">Attack</div>
+                            <div class="matrix-cell matrix-label">Normal</div>
+                            <div class="matrix-cell">{{ matrix[0][0] }}</div>
+                            <div class="matrix-cell">{{ matrix[0][1] }}</div>
+                            <div class="matrix-cell matrix-label">Attack</div>
+                            <div class="matrix-cell">{{ matrix[1][0] }}</div>
+                            <div class="matrix-cell">{{ matrix[1][1] }}</div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="empty-state mt-3">
+                        <p>Confusion matrix data is not available yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="panel-card">
+                <div class="panel-header-row">
+                    <h3>Recent prediction history</h3>
+                    <span class="panel-badge neutral">SQLite records</span>
+                </div>
+                {% if history %}
+                    <div class="table-responsive mt-3">
+                        <table class="table table-modern">
+                            <thead>
+                                <tr><th>Timestamp</th><th>Prediction</th><th>Analysis type</th><th>Probability</th><th>Status</th></tr>
+                            </thead>
+                            <tbody>
+                                {% for item in history %}
+                                <tr>
+                                    <td>{{ item.timestamp }}</td>
+                                    <td>{{ item.label }}</td>
+                                    <td>{{ item.analysis_type }}</td>
+                                    <td>{% if item.probability is not none %}{{ '%.4f' % item.probability }}{% else %}N/A{% endif %}</td>
+                                    <td>
+                                        {% if item.label == 'Attack Traffic' %}
+                                            <span class="status-badge danger">Attack</span>
+                                        {% else %}
+                                            <span class="status-badge success">Normal</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-state mt-3">
+                        <p>No prediction history exists yet. Use the analyze page to test the model.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const chartData = {{ chart_payload | tojson }};
+window.dashboardData = chartData;
+</script>
+{% endblock %}

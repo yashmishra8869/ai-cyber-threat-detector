@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}About | AI Threat Detector{% endblock %}
+{% block content %}
+<div class="container-fluid px-4 py-5">
+    <div class="page-header mb-4">
+        <span class="eyebrow">PROJECT OVERVIEW</span>
+        <h1>About the AI Threat Detector</h1>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="panel-card h-100">
+                <h3>Project objective</h3>
+                <p>This project demonstrates how machine learning can be used to detect cybersecurity threats by classifying network traffic records as normal or malicious. It is built as a final-year B.Tech educational project and focuses on the analytical side of cyber threat detection.</p>
+                <p>The system uses a trained model on NSL-KDD data and provides a practical interface for record-level and batch prediction.</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel-card h-100">
+                <h3>Technologies used</h3>
+                <ul class="feature-list">
+                    <li>Python and Flask</li>
+                    <li>scikit-learn Random Forest</li>
+                    <li>Pandas, NumPy, joblib</li>
+                    <li>Bootstrap 5 and Chart.js</li>
+                    <li>SQLite for prediction history</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-lg-6">
+            <div class="panel-card h-100">
+                <h3>Problem statement</h3>
+                <p>Modern digital systems generate large volumes of network traffic. Identifying whether a record represents normal traffic or an attack is a central problem in cybersecurity analytics and threat detection.</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel-card h-100">
+                <h3>Project objectives</h3>
+                <ul class="feature-list">
+                    <li>Train a working binary classification model</li>
+                    <li>Validate record structure against the NSL-KDD schema</li>
+                    <li>Support single-record and batch analysis</li>
+                    <li>Present results through a modern dashboard</li>
+                    <li>Preserve a practical academic demo experience</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-card mt-4">
+        <h3>Machine learning methodology</h3>
+        <p>The system uses a complete scikit-learn pipeline with preprocessing for categorical features such as protocol type, service, and flag. Numeric features are scaled, and the final classifier is a Random Forest model trained with 80% training data and 20% testing data. The model is trained, evaluated, and saved for reuse in the Flask application.</p>
+    </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-lg-6">
+            <div class="panel-card h-100">
+                <h3>Dataset information</h3>
+                <p>The application is designed to work with the NSL-KDD dataset. The input features follow the standard 41-feature network traffic schema, with the additional `attack_name` and `difficulty` fields used for training and validation. The project does not introduce fake data or synthetic examples.</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel-card h-100">
+                <h3>System scope and limitations</h3>
+                <p>This is a feature-based classification project. It does not perform live packet inspection, does not monitor a real network, and is not an active intrusion prevention system. It is intended for educational demonstration and project presentation.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

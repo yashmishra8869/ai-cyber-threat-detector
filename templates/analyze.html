@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% block title %}Analyze | AI Threat Detector{% endblock %}
+{% block content %}
+<div class="container-fluid px-4 py-5">
+    <div class="page-header mb-4">
+        <span class="eyebrow">TRAFFIC ANALYSIS</span>
+        <h1>Analyze Network Traffic</h1>
+        <p>Enter all 41 NSL-KDD network traffic features to classify a record as normal or attack traffic.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-xl-8">
+            <div class="panel-card">
+                <div class="panel-header-row">
+                    <h3>Single record analysis</h3>
+                    <span class="panel-badge neutral">41 features</span>
+                </div>
+
+                <form method="POST" action="{{ url_for('analyze') }}" class="feature-form mt-4">
+                    <div class="form-section">
+                        <h4>Basic connection information</h4>
+                        <div class="row g-3">
+                            <div class="col-md-6 col-xl-4">
+                                <label for="duration" class="form-label">Duration</label>
+                                <input type="number" step="any" class="form-control" id="duration" name="duration" required>
+                            </div>
+                            <div class="col-md-6 col-xl-4">
+                                <label for="src_bytes" class="form-label">Source bytes</label>
+                                <input type="number" step="any" class="form-control" id="src_bytes" name="src_bytes" required>
+                            </div>
+                            <div class="col-md-6 col-xl-4">
+                                <label for="dst_bytes" class="form-label">Destination bytes</label>
+                                <input type="number" step="any" class="form-control" id="dst_bytes" name="dst_bytes" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Protocol and service information</h4>
+                        <div class="row g-3">
+                            <div class="col-md-6 col-xl-4">
+                                <label for="protocol_type" class="form-label">Protocol type</label>
+                                <select class="form-select" id="protocol_type" name="protocol_type" required>
+                                    <option value="">Select...</option>
+                                    {% for option in choices['protocol_type'] %}
+                                        <option value="{{ option }}">{{ option }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6 col-xl-4">
+                                <label for="service" class="form-label">Service</label>
+                                <select class="form-select" id="service" name="service" required>
+                                    <option value="">Select...</option>
+                                    {% for option in choices['service'] %}
+                                        <option value="{{ option }}">{{ option }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6 col-xl-4">
+                                <label for="flag" class="form-label">Flag</label>
+                                <select class="form-select" id="flag" name="flag" required>
+                                    <option value="">Select...</option>
+                                    {% for option in choices['flag'] %}
+                                        <option value="{{ option }}">{{ option }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Connection error statistics</h4>
+                        <div class="row g-3">
+                            {% for field in feature_fields %}
+                                {% if field.name in ['land', 'wrong_fragment', 'urgent', 'hot', 'num_failed_logins', 'logged_in', 'num_compromised', 'root_shell', 'su_attempted', 'num_root', 'num_file_creations', 'num_shells', 'num_access_files', 'num_outbound_cmds', 'is_host_login', 'is_guest_login'] %}
+                                <div class="col-md-6 col-xl-4">
+                                    <label for="{{ field.name }}" class="form-label">{{ field.label }}</label>
+                                    <input type="number" step="any" class="form-control" id="{{ field.name }}" name="{{ field.name }}" required>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Connection and error rate values</h4>
+                        <div class="row g-3">
+                            {% for field in feature_fields %}
+                                {% if field.name in ['count', 'srv_count', 'serror_rate', 'srv_serror_rate', 'rerror_rate', 'srv_rerror_rate', 'same_srv_rate', 'diff_srv_rate', 'srv_diff_host_rate'] %}
+                                <div class="col-md-6 col-xl-4">
+                                    <label for="{{ field.name }}" class="form-label">{{ field.label }}</label>
+                                    <input type="number" step="any" class="form-control" id="{{ field.name }}" name="{{ field.name }}" required>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Host-based traffic features</h4>
+                        <div class="row g-3">
+                            {% for field in feature_fields %}
+                                {% if field.name in ['dst_host_count', 'dst_host_srv_count', 'dst_host_same_srv_rate', 'dst_host_diff_srv_rate', 'dst_host_same_src_port_rate', 'dst_host_srv_diff_host_rate', 'dst_host_serror_rate', 'dst_host_srv_serror_rate', 'dst_host_rerror_rate', 'dst_host_srv_rerror_rate'] %}
+                                <div class="col-md-6 col-xl-4">
+                                    <label for="{{ field.name }}" class="form-label">{{ field.label }}</label>
+                                    <input type="number" step="any" class="form-control" id="{{ field.name }}" name="{{ field.name }}" required>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-3 mt-4 pt-3 border-top border-secondary-subtle">
+                        <button class="btn btn-primary" type="submit">Analyze Traffic</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-xl-4">
+            <div class="panel-card upload-panel">
+                <div class="panel-header-row">
+                    <h3>CSV batch analysis</h3>
+                    <span class="panel-badge neutral">CSV</span>
+                </div>
+                <form method="POST" action="{{ url_for('analyze') }}" enctype="multipart/form-data" class="mt-4">
+                    <div class="upload-box">
+                        <i class="bi bi-cloud-upload"></i>
+                        <p>Drop your CSV here or browse</p>
+                        <label class="btn btn-outline-light" for="csv_file">Browse files</label>
+                        <input class="form-control visually-hidden" type="file" id="csv_file" name="csv_file" accept=".csv" required>
+                    </div>
+                    <div class="small text-muted mt-3">
+                        CSV files only • Maximum 100 rows • 41 required feature columns • No attack_name or difficulty required
+                    </div>
+                    <button class="btn btn-primary w-100 mt-3" type="submit">Analyze Batch CSV</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block title %}Prediction Result | AI Threat Detector{% endblock %}
+{% block content %}
+<div class="container-fluid px-4 py-5">
+    {% if single_prediction %}
+    <div class="result-container">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <span class="eyebrow">PREDICTION RESULT</span>
+                <h1 class="mb-0">{{ single_prediction.label }}</h1>
+            </div>
+            {% if single_prediction.label == 'Attack Traffic' %}
+                <span class="result-badge danger">High-risk classification</span>
+            {% else %}
+                <span class="result-badge success">Normal classification</span>
+            {% endif %}
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="metric-card">
+                    <div class="metric-top">
+                        <span class="metric-icon primary"><i class="bi bi-shield-check"></i></span>
+                        <span class="metric-label">Status</span>
+                    </div>
+                    <strong>{{ single_prediction.status }}</strong>
+                    <small>Live classification result</small>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="metric-card">
+                    <div class="metric-top">
+                        <span class="metric-icon secondary"><i class="bi bi-clock-history"></i></span>
+                        <span class="metric-label">Timestamp</span>
+                    </div>
+                    <strong>{{ analysis_time or 'N/A' }}</strong>
+                    <small>Analysis time</small>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="metric-card">
+                    <div class="metric-top">
+                        <span class="metric-icon success"><i class="bi bi-percent"></i></span>
+                        <span class="metric-label">Probability</span>
+                    </div>
+                    <strong>{% if single_prediction.probability is not none %}{{ '%.4f' % single_prediction.probability }}{% else %}N/A{% endif %}</strong>
+                    <small>Model confidence</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box mt-4">
+            <h4>Classification explanation</h4>
+            <p>
+                {% if single_prediction.label == 'Attack Traffic' %}
+                    This traffic pattern is classified as attack traffic because the trained model estimated a malicious pattern from the input network record.
+                {% else %}
+                    This traffic pattern is classified as normal traffic because the model estimated that it resembles standard, non-malicious behavior.
+                {% endif %}
+            </p>
+            {% if single_prediction.probability is not none %}
+                <p class="text-muted mb-0">{{ single_prediction.confidence_message }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if csv_results %}
+    <div class="mt-5">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+            <div>
+                <span class="eyebrow">BATCH ANALYSIS</span>
+                <h2 class="mb-0">Batch results overview</h2>
+            </div>
+            <a class="btn btn-outline-light" href="{{ url_for('download_results', data=csv_results|tojson|urlencode) }}">Download CSV</a>
+        </div>
+        <div class="row g-3 mb-4">
+            <div class="col-md-3"><div class="metric-card"><div class="metric-top"><span class="metric-icon primary"><i class="bi bi-list-ol"></i></span><span class="metric-label">Total records</span></div><strong>{{ total_records }}</strong><small>Rows processed</small></div></div>
+            <div class="col-md-3"><div class="metric-card"><div class="metric-top"><span class="metric-icon success"><i class="bi bi-check-circle"></i></span><span class="metric-label">Normal traffic</span></div><strong>{{ normal_count }}</strong><small>Safe records</small></div></div>
+            <div class="col-md-3"><div class="metric-card"><div class="metric-top"><span class="metric-icon danger"><i class="bi bi-exclamation-circle"></i></span><span class="metric-label">Attack traffic</span></div><strong>{{ attack_count }}</strong><small>Suspicious records</small></div></div>
+            <div class="col-md-3"><div class="metric-card"><div class="metric-top"><span class="metric-icon secondary"><i class="bi bi-broadcast"></i></span><span class="metric-label">Status</span></div><strong>Complete</strong><small>Analysis finished</small></div></div>
+        </div>
+
+        <div class="panel-card">
+            <div class="table-responsive">
+                <table class="table table-modern">
+                    <thead>
+                        <tr>
+                            <th>Record</th>
+                            <th>Prediction</th>
+                            <th>Probability</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in csv_results %}
+                        <tr>
+                            <td>{{ item.record_number }}</td>
+                            <td>{{ item.prediction }}</td>
+                            <td>{% if item.probability is not none %}{{ '%.4f' % item.probability }}{% else %}N/A{% endif %}</td>
+                            <td>
+                                {% if item.prediction == 'Attack Traffic' %}
+                                    <span class="status-badge danger">Attack</span>
+                                {% else %}
+                                    <span class="status-badge success">Normal</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
