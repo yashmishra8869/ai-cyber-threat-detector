@@ -17,7 +17,7 @@ DATABASE_PATH = DATA_DIR / "predictions.db"
 MAX_UPLOAD_SIZE = 2 * 1024 * 1024
 ALLOWED_UPLOAD_EXTENSIONS = {".csv"}
 
-SECRET_KEY = os.environ.get("SECRET_KEY", "cyber-threat-detector-secret-key")
+SECRET_KEY = os.environ.get("SECRET_KEY") or os.urandom(32).hex()
 DEBUG = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
 PORT = int(os.environ.get("PORT", "5000"))
 

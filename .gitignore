@@ -8,7 +8,11 @@ __pycache__/
 *.db
 *.sqlite3
 *.log
+*.joblib
+!model/threat_pipeline.joblib
 .DS_Store
 .idea/
 .vscode/
 *.egg-info/
+uploads/*
+!uploads/.gitkeep
